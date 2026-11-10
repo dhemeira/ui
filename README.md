@@ -2,8 +2,8 @@
 
 Dependency-free React UI primitives built on plain HTML elements. Components render native elements (`<button>`, `<input>`, `<dialog>`, …) with no UI/component library underneath.
 
-- **Authoring** — styled with Tailwind CSS v4 (`@theme` tokens + utilities), compiled at build time.
-- **Zero setup for consumers** — the compiled CSS is injected automatically when the package is imported. No stylesheet to import, no Tailwind required, no icon dependency.
+- **Authoring** — styled with Tailwind CSS v4 (`@theme` tokens + utilities).
+- **Tailwind-native** — components use Tailwind utility classes; the library ships its source so your own Tailwind build compiles them. No precompiled CSS is injected, so it can't override your styles.
 - **Tree-shakeable** — ESM-only with named exports, so `import { Button } from '@dhemeira/ui'` pulls in only what you use.
 - **Collision-proof theming** — all colors come from prefixed `--color-ui-*` tokens, so they never clash with a consumer's own Tailwind theme.
 
@@ -15,11 +15,27 @@ Requires `react >= 19` (peer dependency). No other runtime dependencies.
 npm install @dhemeira/ui
 ```
 
-That's it — the styles are injected by the JS. Just import the components:
+Import the components:
 
 ```tsx
 import { Button, Input, Modal } from "@dhemeira/ui";
 ```
+
+## Setup
+
+The library ships Tailwind source rather than precompiled CSS, so it is compiled inside your own Tailwind build — the same way your app code is. In your Tailwind CSS entry (the file that has `@import "tailwindcss"`), add:
+
+```css
+@import "tailwindcss";
+@import "@dhemeira/ui/styles.css";
+
+@source "../node_modules/@dhemeira/ui/src";
+```
+
+- `@import "@dhemeira/ui/styles.css"` brings in the `--color-ui-*` theme tokens.
+- `@source` lets Tailwind scan the library's components so their utility classes are generated.
+
+Adjust the `@source` path to match your project's `node_modules` location. There is no runtime CSS injection, so the library never overrides your own base styles, fonts, or utilities.
 
 ## Components
 
@@ -115,7 +131,7 @@ The library ships sensible dark defaults; override any token by defining it on `
 
 ```sh
 npm install
-npm run build       # production build (js + css-injected + types)
+npm run build       # production build (js + types)
 npm run dev         # rebuild on change (js/css + types)
 npm run typecheck
 ```
@@ -124,8 +140,10 @@ Heroicons used internally by components are imported from `@heroicons/react` in 
 
 The build outputs to `dist/`:
 
-- `dist/index.js` — ESM bundle with the compiled CSS embedded and injected at import time
+- `dist/index.js` — ESM bundle
 - `dist/*.d.ts` — TypeScript declarations (carry the JSDoc usage docs)
+
+The npm tarball also includes `src/` (components + `styles.css`) so consumers can add it to their Tailwind `@source` and import the theme tokens.
 
 ## Publishing
 
