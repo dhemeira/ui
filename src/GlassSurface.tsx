@@ -26,7 +26,7 @@ export function GlassSurface<T extends ElementType = "div">({
   const Component = (as ?? "div") as ElementType;
   return (
     <Component
-      className={`bg-text/10 backdrop-blur-xs inset-shadow-[0_0_2px_1px_#eef0fb22] backdrop-saturate-150  ${className ?? ""}`}
+      className={`ui-glass inset-shadow-[0_0_2px_1px_#eef0fb22] ${className ?? ""}`}
       {...rest}
     >
       {children}
